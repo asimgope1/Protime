@@ -29,6 +29,7 @@ export const {width: WIDTH, height: HEIGHT} = Dimensions.get('window');
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [press, setpress] = useState(false);
 
   const headerCardHeight = useSharedValue(0);
   const loginContainerTranslateY = useSharedValue(HEIGHT);
@@ -80,6 +81,7 @@ const Login = () => {
   const handleLogin = () => {
     // Implement login logic here
     playSound();
+    setpress(true);
     console.log('Username:', username);
     console.log('Password:', password);
   };
@@ -144,15 +146,19 @@ const Login = () => {
                 shadowRadius: 3.84,
                 elevation: 5,
               }}>
-              {/* <Image
-                source={require('../../Assets/images/')}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: WIDTH * 0.4,
-                  resizeMode: 'cover',
-                }}
-              /> */}
+              {press === true ? (
+                <Image
+                  source={require('../../Assets/images/shubham.jpg')}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: WIDTH * 0.4,
+                    resizeMode: 'cover',
+                  }}
+                />
+              ) : (
+                <></>
+              )}
             </View>
           </Animated.View>
           <Animated.View style={[styles.loginContainer, loginContainerStyle]}>

@@ -1,5 +1,5 @@
 import React, {Fragment, useEffect} from 'react';
-import {View, Image, SafeAreaView, ImageBackground} from 'react-native';
+import {View, Image, SafeAreaView, ImageBackground, Text} from 'react-native';
 import {BRAND} from '../../constants/color';
 import LinearGradient from 'react-native-linear-gradient';
 import {BASE, LOGO, LOGO2} from '../../constants/imagepath';
@@ -61,28 +61,41 @@ const Splash = ({navigation}) => {
           }}>
           <Animated.View style={[styles.logoContainer1, logoStyle]}>
             <Image
-              source={LOGO}
+              source={require('../../Assets/images/icon.png')}
               style={{
                 height: '100%',
                 width: '100%',
-                resizeMode: 'contain',
+                resizeMode: 'cover',
                 alignSelf: 'center',
               }}
             />
           </Animated.View>
           <Animated.View style={[styles.logoContainer, logo2Style]}>
-            <Image
-              source={LOGO2}
+            <LinearGradient
               style={{
-                height: '100%',
-                width: '100%',
-                resizeMode: 'contain',
+                marginTop: 10,
+                width: WIDTH * 0.8,
+                height: HEIGHT * 0.1,
+                justifyContent: 'center',
+                alignItems: 'center',
                 alignSelf: 'center',
+                backgroundColor: 'red',
+                borderRadius: 25,
               }}
-            />
+              colors={['#b4000a', '#ff6347']}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 20,
+                  fontWeight: '700',
+                  textAlign: 'center',
+                }}>
+                Looply
+              </Text>
+            </LinearGradient>
           </Animated.View>
         </View>
-        <WritingAnimation text="Hi Buddy" />
+        <WritingAnimation text="Welcome to looply" />
       </ImageBackground>
       {/* </SafeAreaView> */}
     </Fragment>
