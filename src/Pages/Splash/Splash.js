@@ -82,7 +82,7 @@ const Splash = ({navigation}) => {
             />
           </Animated.View>
         </View>
-        <WritingAnimation text="Welcome to Our App!" />
+        <WritingAnimation text="Hi Buddy" />
       </ImageBackground>
       {/* </SafeAreaView> */}
     </Fragment>

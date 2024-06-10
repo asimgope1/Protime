@@ -11,6 +11,8 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Animated, {
@@ -54,6 +56,25 @@ const Login = () => {
     headerCardHeight.value = withTiming(HEIGHT * 0.5, {duration: 1500});
     loginContainerTranslateY.value = withTiming(0, {duration: 1500});
     animatedViewTranslateX.value = withTiming(0, {duration: 1500});
+
+    const backAction = () => {
+      Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {text: 'YES', onPress: () => BackHandler.exitApp()},
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
   }, []);
 
   const handleLogin = () => {
@@ -90,7 +111,9 @@ const Login = () => {
       <KeyboardAvoidingView
         style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView contentContainerStyle={{flexGrow: 1}}>
+        <ScrollView
+          keyboardShouldPersistTaps={'always'}
+          contentContainerStyle={{flexGrow: 1}}>
           <Animated.View
             style={[
               {
