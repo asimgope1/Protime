@@ -1,5 +1,5 @@
 import React, {Fragment, useEffect} from 'react';
-import {View, Image, SafeAreaView} from 'react-native';
+import {View, Image, SafeAreaView, ImageBackground} from 'react-native';
 import {BRAND} from '../../constants/color';
 import LinearGradient from 'react-native-linear-gradient';
 import {BASE, LOGO, LOGO2} from '../../constants/imagepath';
@@ -10,6 +10,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import WritingAnimation from '../../components/WritingAnimation';
 
 const Splash = ({navigation}) => {
   const logoTranslateY = useSharedValue(HEIGHT);
@@ -38,65 +39,52 @@ const Splash = ({navigation}) => {
 
   return (
     <Fragment>
-      <MyStatusBar backgroundColor={BRAND} barStyle={'dark-content'} />
-      <SafeAreaView style={splashStyles.maincontainer}>
-        <LinearGradient
-          end={{x: 0, y: 0}}
-          start={{x: 0, y: 1}}
-          colors={[BRAND, BRAND]}
+      <MyStatusBar backgroundColor={'transparent'} barStyle={'dark-content'} />
+      {/* <SafeAreaView style={splashStyles.maincontainer}> */}
+      <ImageBackground
+        source={BASE}
+        style={{
+          flex: 1,
+          width: WIDTH,
+          alignItems: 'center',
+          // justifyContent: 'center',
+          backgroundColor: 'rgb(255, 0, 0)',
+        }}>
+        <View
           style={{
-            flex: 1,
-            justifyContent: 'center',
+            marginTop: HEIGHT * 0.3,
+            width: WIDTH * 0.5,
+            height: HEIGHT * 0.2,
+            // justifyContent: 'space-evenly',
             alignItems: 'center',
             alignSelf: 'center',
           }}>
-          <View
-            style={{
-              width: WIDTH * 0.5,
-              height: HEIGHT * 0.2,
-              // justifyContent: 'space-evenly',
-              alignItems: 'center',
-              alignSelf: 'center',
-            }}>
-            <Animated.View style={[styles.logoContainer1, logoStyle]}>
-              <Image
-                source={LOGO}
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  resizeMode: 'contain',
-                  alignSelf: 'center',
-                }}
-              />
-            </Animated.View>
-            <Animated.View style={[styles.logoContainer, logo2Style]}>
-              <Image
-                source={LOGO2}
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  resizeMode: 'contain',
-                  alignSelf: 'center',
-                }}
-              />
-            </Animated.View>
-          </View>
-          <View>
+          <Animated.View style={[styles.logoContainer1, logoStyle]}>
             <Image
-              source={BASE}
+              source={LOGO}
               style={{
-                top: HEIGHT * 0.25,
-                height: HEIGHT * 0.2,
-                width: WIDTH * 0.9,
-                resizeMode: 'cover',
+                height: '100%',
+                width: '100%',
+                resizeMode: 'contain',
                 alignSelf: 'center',
-                justifyContent: 'center',
-                alignItems: 'center',
               }}
             />
-          </View>
-        </LinearGradient>
-      </SafeAreaView>
+          </Animated.View>
+          <Animated.View style={[styles.logoContainer, logo2Style]}>
+            <Image
+              source={LOGO2}
+              style={{
+                height: '100%',
+                width: '100%',
+                resizeMode: 'contain',
+                alignSelf: 'center',
+              }}
+            />
+          </Animated.View>
+        </View>
+        <WritingAnimation text="Welcome to Our App!" />
+      </ImageBackground>
+      {/* </SafeAreaView> */}
     </Fragment>
   );
 };

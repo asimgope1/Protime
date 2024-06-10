@@ -121,15 +121,15 @@ const Login = () => {
                 shadowRadius: 3.84,
                 elevation: 5,
               }}>
-              <Image
-                source={require('../../Assets/images/shubham.jpg')}
+              {/* <Image
+                source={require('../../Assets/images/')}
                 style={{
                   width: '100%',
                   height: '100%',
                   borderRadius: WIDTH * 0.4,
                   resizeMode: 'cover',
                 }}
-              />
+              /> */}
             </View>
           </Animated.View>
           <Animated.View style={[styles.loginContainer, loginContainerStyle]}>
