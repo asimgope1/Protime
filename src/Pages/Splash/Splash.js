@@ -95,7 +95,7 @@ const Splash = ({navigation}) => {
             </LinearGradient>
           </Animated.View>
         </View>
-        <WritingAnimation text="Welcome to looply" />
+        <WritingAnimation text="Welcome to looply sagar" />
       </ImageBackground>
       {/* </SafeAreaView> */}
     </Fragment>

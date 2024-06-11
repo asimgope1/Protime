@@ -148,7 +148,7 @@ const Login = () => {
               }}>
               {press === true ? (
                 <Image
-                  source={require('../../Assets/images/shubham.jpg')}
+                  source={require('../../Assets/images/sagar.jpg')}
                   style={{
                     width: '100%',
                     height: '100%',
