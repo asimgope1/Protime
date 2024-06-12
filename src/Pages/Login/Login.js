@@ -24,7 +24,7 @@ import Sound from 'react-native-sound';
 
 export const {width: WIDTH, height: HEIGHT} = Dimensions.get('window');
 
-const Login = () => {
+const Login = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -58,7 +58,7 @@ const Login = () => {
 
   const handleLogin = () => {
     // Implement login logic here
-    playSound();
+    navigation.navigate('Home');
     console.log('Username:', username);
     console.log('Password:', password);
   };

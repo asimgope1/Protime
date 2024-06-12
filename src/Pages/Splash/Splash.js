@@ -60,7 +60,7 @@ const Splash = ({navigation}) => {
             alignSelf: 'center',
           }}>
           <Animated.View style={[styles.logoContainer1, logoStyle]}>
-            <Image
+            {/* <Image
               source={LOGO}
               style={{
                 height: '100%',
@@ -68,10 +68,10 @@ const Splash = ({navigation}) => {
                 resizeMode: 'contain',
                 alignSelf: 'center',
               }}
-            />
+            /> */}
           </Animated.View>
           <Animated.View style={[styles.logoContainer, logo2Style]}>
-            <Image
+            {/* <Image
               source={LOGO2}
               style={{
                 height: '100%',
@@ -79,10 +79,10 @@ const Splash = ({navigation}) => {
                 resizeMode: 'contain',
                 alignSelf: 'center',
               }}
-            />
+            /> */}
           </Animated.View>
         </View>
-        <WritingAnimation text="Welcome to Our App!" />
+        {/* <WritingAnimation text="Welcome to Our App!" /> */}
       </ImageBackground>
       {/* </SafeAreaView> */}
     </Fragment>
