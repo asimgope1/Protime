@@ -1,3 +1,4 @@
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -12,21 +13,33 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
-import SoundPlayer from 'react-native-sound-player';
-import Sound from 'react-native-sound';
+import SQLitePlugin from 'react-native-sqlite-2'; // Import SQLitePlugin
+import {POSTNETWORK} from '../../utils/Network';
+import {storeObjByKey, storeStringByKey} from '../../utils/Storage';
+import {checkuserToken} from '../../redux/actions/auth';
+import {useDispatch} from 'react-redux';
 
 export const {width: WIDTH, height: HEIGHT} = Dimensions.get('window');
 
 const Login = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [clientUrl, setClientUrl] = useState('');
+  const dispatch = useDispatch();
+
+  // SQLite database initialization
+  const db = SQLitePlugin.openDatabase({
+    name: 'test.db',
+    version: '1.0',
+    description: '',
+    size: 1,
+  });
 
   const headerCardHeight = useSharedValue(0);
   const loginContainerTranslateY = useSharedValue(HEIGHT);
@@ -50,32 +63,101 @@ const Login = ({navigation}) => {
     };
   });
 
+  const fetchClientUrlFromSQLite = () => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT client_url FROM ApiResponse ORDER BY id DESC LIMIT 1',
+        [],
+        (_, {rows}) => {
+          const url = rows.item(0)?.client_url || '';
+          setClientUrl(url);
+        },
+        error => {
+          console.error('Error fetching client_url:', error);
+        },
+      );
+    });
+  };
+
   useEffect(() => {
     headerCardHeight.value = withTiming(HEIGHT * 0.5, {duration: 1500});
     loginContainerTranslateY.value = withTiming(0, {duration: 1500});
     animatedViewTranslateX.value = withTiming(0, {duration: 1500});
+
+    fetchClientUrlFromSQLite();
+    fetchCredentials();
   }, []);
 
-  const handleLogin = () => {
-    // Implement login logic here
-    navigation.navigate('Home');
-    console.log('Username:', username);
-    console.log('Password:', password);
+  const handleLogin = async () => {
+    const url = `${clientUrl}api/login`;
+    const data = {userid: username, password: password};
+
+    try {
+      const res = await POSTNETWORK(url, data);
+
+      if (res.Code === '200') {
+        // Store login response (if needed)
+        storeObjByKey('loginResponse', res.data);
+
+        // Store username and password securely in SQLite
+        const db = SQLitePlugin.openDatabase({
+          name: 'test.db',
+          version: '1.0',
+          description: '',
+          size: 1,
+        });
+        db.transaction(tx => {
+          tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS UserCredentials (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)',
+            [],
+            () => {
+              console.log('Table UserCredentials created successfully');
+            },
+            error => {
+              console.error('Error creating table UserCredentials:', error);
+            },
+          );
+
+          tx.executeSql(
+            'INSERT INTO UserCredentials (username, password) VALUES (?, ?)',
+            [username, password],
+            (_, result) => {
+              console.log('User credentials saved successfully:', result);
+            },
+            error => {
+              console.error('Error saving user credentials:', error);
+            },
+          );
+        });
+
+        // Dispatch action to update user token or navigate to Home
+        dispatch(checkuserToken(true));
+      } else {
+        console.error('Login failed:', res.Message); // Handle login failure
+      }
+    } catch (error) {
+      console.error('Network error:', error); // Handle network errors
+    }
   };
 
-  const playSound = () => {
-    soundInstance = new Sound('tone.mp3', Sound.MAIN_BUNDLE, error => {
-      if (error) {
-        console.error('Failed to load the sound', error);
-      } else {
-        soundInstance.play(success => {
-          if (success) {
-            console.log('successfully finished playing');
-          } else {
-            console.log('playback failed due to audio decoding errors');
+  const fetchCredentials = () => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM UserCredentials ORDER BY id DESC LIMIT 1',
+        [],
+        (_, result) => {
+          if (result.rows.length > 0) {
+            const fetchedUsername = result.rows.item(0).username || '';
+            const fetchedPassword = result.rows.item(0).password || '';
+            setUsername(fetchedUsername);
+            setPassword(fetchedPassword);
           }
-        });
-      }
+          console.log('Credentials fetched successfully');
+        },
+        error => {
+          console.error('Error fetching credentials:', error);
+        },
+      );
     });
   };
 
@@ -121,15 +203,15 @@ const Login = ({navigation}) => {
                 shadowRadius: 3.84,
                 elevation: 5,
               }}>
-              {/* <Image
-                source={require('../../Assets/images/')}
+              <Image
+                source={require('../../Assets/images/logo.png')}
                 style={{
-                  width: '100%',
+                  width: '85%',
                   height: '100%',
                   borderRadius: WIDTH * 0.4,
-                  resizeMode: 'cover',
+                  resizeMode: 'contain',
                 }}
-              /> */}
+              />
             </View>
           </Animated.View>
           <Animated.View style={[styles.loginContainer, loginContainerStyle]}>

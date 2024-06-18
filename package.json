@@ -10,11 +10,15 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/material-top-tabs": "^6.6.13",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "@reduxjs/toolkit": "^2.2.5",
+    "@rneui/base": "^4.0.0-rc.8",
+    "@rneui/themed": "^4.0.0-rc.8",
+    "moment": "^2.30.1",
     "react": "18.2.0",
     "react-native": "0.74.2",
     "react-native-gesture-handler": "^2.16.2",
@@ -27,6 +31,7 @@
     "react-native-sound-player": "^0.14.2",
     "react-native-sqlite-2": "^3.6.2",
     "react-native-tab-view": "^3.5.2",
+    "react-native-vector-icons": "^10.1.0",
     "react-redux": "^9.1.2"
   },
   "devDependencies": {

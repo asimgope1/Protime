@@ -17,11 +17,11 @@ const Splash = ({navigation}) => {
   const logo2TranslateY = useSharedValue(-HEIGHT);
 
   useEffect(() => {
-    logoTranslateY.value = withTiming(0, {duration: 1000});
-    logo2TranslateY.value = withTiming(0, {duration: 1000});
+    logoTranslateY.value = withTiming(0, {duration: 500});
+    logo2TranslateY.value = withTiming(0, {duration: 500});
 
     setTimeout(() => {
-      navigation.navigate('Login');
+      navigation.navigate('Check');
     }, 2000);
   }, []);
 
@@ -60,7 +60,7 @@ const Splash = ({navigation}) => {
             alignSelf: 'center',
           }}>
           <Animated.View style={[styles.logoContainer1, logoStyle]}>
-            {/* <Image
+            <Image
               source={LOGO}
               style={{
                 height: '100%',
@@ -68,10 +68,10 @@ const Splash = ({navigation}) => {
                 resizeMode: 'contain',
                 alignSelf: 'center',
               }}
-            /> */}
+            />
           </Animated.View>
           <Animated.View style={[styles.logoContainer, logo2Style]}>
-            {/* <Image
+            <Image
               source={LOGO2}
               style={{
                 height: '100%',
@@ -79,7 +79,7 @@ const Splash = ({navigation}) => {
                 resizeMode: 'contain',
                 alignSelf: 'center',
               }}
-            /> */}
+            />
           </Animated.View>
         </View>
         {/* <WritingAnimation text="Welcome to Our App!" /> */}
