@@ -9,11 +9,15 @@ import {BLACK, GRAY, RED, WHITE} from '../constants/color';
 import Manager from '../Pages/Home/Manager/Manager';
 import Notification from '../Pages/Home/Notification/Notification';
 import Profile from '../Pages/Home/Profile/Profile';
+import LeaveEntry from '../Pages/Home/Dashboard/LeaveEntry';
+import OutDoor from '../Pages/Home/Dashboard/OutDoor';
+import LeaveBalance from '../Pages/Home/Dashboard/LeaveBalance';
+import LeaveStatus from '../Pages/Home/Dashboard/LeaveStatus';
 
 // Define the HomeStack
 const HomeStackNavigator = createNativeStackNavigator();
 
-export const HomeStack = () => {
+const HomeStack = () => {
   return (
     <HomeStackNavigator.Navigator initialRouteName="Home">
       <HomeStackNavigator.Screen
@@ -51,7 +55,6 @@ const TabStack = () => {
         tabBarIcon: ({color, size, focused}) => {
           let iconName;
           let type;
-          let tintColor;
 
           if (route.name === 'HomeStack') {
             iconName = 'home';
@@ -65,7 +68,7 @@ const TabStack = () => {
             type = 'material-community';
           }
 
-          tintColor = focused ? WHITE : '#252324';
+          const tintColor = focused ? WHITE : '#252324';
 
           return (
             <Icon
@@ -108,11 +111,46 @@ const TabStack = () => {
   );
 };
 
+// Define the MainStack to include TabStack and LeaveEntry
+const MainStackNavigator = createNativeStackNavigator();
+
+const MainStack = () => {
+  return (
+    <MainStackNavigator.Navigator initialRouteName="Tabs">
+      <MainStackNavigator.Screen
+        name="Tabs"
+        component={TabStack}
+        options={{headerShown: false}}
+      />
+      <MainStackNavigator.Screen
+        name="LeaveEntry"
+        component={LeaveEntry}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="OutDoor"
+        component={OutDoor}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="LeaveBalance"
+        component={LeaveBalance}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="LeaveStatus"
+        component={LeaveStatus}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+    </MainStackNavigator.Navigator>
+  );
+};
+
 // Define the main App component
 export default function App() {
   return (
     <NavigationContainer independent={true}>
-      <TabStack />
+      <MainStack />
     </NavigationContainer>
   );
 }

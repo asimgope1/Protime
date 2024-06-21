@@ -54,6 +54,7 @@ import {Icon} from '@rneui/themed';
 import {clearAll, getObjByKey} from '../../utils/Storage';
 import {checkuserToken} from '../../redux/actions/auth';
 import {useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 
 const get = async () => {
   let tree = await getObjByKey('loginResponse');
@@ -62,15 +63,16 @@ const get = async () => {
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   return (
     <FlatList
       numColumns={4}
       data={[
-        {img: LeaveEntry, text: 'Leave Entry'},
-        {img: LeaveStatus, text: 'Leave Status'},
-        {img: LeaveBalance, text: 'Leave Bal.'},
+        {img: LeaveEntry, text: 'Leave Entry', to: 'LeaveEntry'},
+        {img: LeaveStatus, text: 'Leave Status', to: 'LeaveStatus'},
+        {img: LeaveBalance, text: 'Leave Bal.', to: 'LeaveBalance'},
         {img: LeaveStatus, text: 'C.Off'},
-        {img: Outdoor, text: 'Outdoor'},
+        {img: Outdoor, text: 'Outdoor', to: 'OutDoor'},
         {img: ManualPunch, text: 'In/Out'},
         {img: ClientVisit, text: 'Client Visit'},
         {img: Supervisor, text: 'Supervisor'},
@@ -83,8 +85,7 @@ const Dashboard = () => {
         <TouchableOpacity
           style={styles.itemContainer}
           onPress={() => {
-            clearAll();
-            dispatch(checkuserToken(false));
+            navigation.navigate(item.to);
           }}>
           <View
             style={{
