@@ -54,11 +54,51 @@ import {Icon} from '@rneui/themed';
 import {clearAll, getObjByKey} from '../../utils/Storage';
 import {checkuserToken} from '../../redux/actions/auth';
 import {useDispatch} from 'react-redux';
+import SQLitePlugin from 'react-native-sqlite-2';
 import {useNavigation} from '@react-navigation/native';
 
+// const get = async () => {
+//   let tree = await getObjByKey('loginResponse');
+//   console.log('fredc', tree);
+// };
 const get = async () => {
-  let tree = await getObjByKey('loginResponse');
-  console.log('fredc', tree);
+  try {
+    let tree = await getObjByKey('loginResponse');
+    console.log('fredc', tree);
+
+    if (tree && tree.length > 0) {
+      const profile = tree[0]; // Assuming the profile details are in the first object of the array
+
+      const empCode = profile.emp_code;
+      setname(profile.staf_nm);
+      const empImage = profile.staf_image;
+      const deptName = profile.dept_nm;
+      const desgName = profile.desg_nm;
+      const presentDays = profile.PRESENT;
+      const absentDays = profile.ABSENT;
+      const leaveDays = profile.LEAVEDAY;
+      const halfDay = profile.HALFDAY;
+      const woffDays = profile.WOFF;
+
+      console.log('Employee Code:', empCode);
+      console.log('Employee Name:', empName);
+      console.log('Employee Image:', empImage);
+      console.log('Department Name:', deptName);
+      console.log('Designation Name:', desgName);
+      console.log('Present Days:', presentDays);
+      console.log('Absent Days:', absentDays);
+      console.log('Leave Days:', leaveDays);
+      console.log('Half Day:', halfDay);
+      console.log('Weekly Off Days:', woffDays);
+
+      // You can now use these variables in your component or logic
+      // For example, you could set them in the state if using a class component or useState if using a functional component
+    } else {
+      console.log('No profile data found');
+    }
+  } catch (error) {
+    console.error('Error fetching profile data:', error);
+  }
 };
 
 const Dashboard = () => {
@@ -71,10 +111,10 @@ const Dashboard = () => {
         {img: LeaveEntry, text: 'Leave Entry', to: 'LeaveEntry'},
         {img: LeaveStatus, text: 'Leave Status', to: 'LeaveStatus'},
         {img: LeaveBalance, text: 'Leave Bal.', to: 'LeaveBalance'},
-        {img: LeaveStatus, text: 'C.Off'},
+        {img: LeaveStatus, text: 'C.Off', to: 'CoffEntry'},
         {img: Outdoor, text: 'Outdoor', to: 'OutDoor'},
-        {img: ManualPunch, text: 'In/Out'},
-        {img: ClientVisit, text: 'Client Visit'},
+        {img: ManualPunch, text: 'In/Out', to: 'InOut'},
+        {img: ClientVisit, text: 'Client Visit', to: 'ClientVisit'},
         {img: Supervisor, text: 'Supervisor'},
         {img: ExpenseEntry, text: 'Expense '},
         {img: Odometer, text: 'Odometer'},
@@ -117,49 +157,276 @@ const Dashboard = () => {
   );
 };
 
-const Report = () => {
+const TableHeader = () => {
+  const headers = [
+    {text: 'Date', key: 'Date'},
+    {text: 'Check In', key: 'In'},
+    {text: 'Check Out', key: 'Out'},
+    {text: 'Working Hrs', key: 'Total_Hour'},
+  ];
   return (
-    <FlatList
-      numColumns={2}
-      data={[
-        {img: ONE, text: 'Label'},
-        {img: TWO, text: 'Label'},
-        {img: THREE, text: 'Label'},
-        {img: FOUR, text: 'Label'},
-      ]}
-      renderItem={({item}) => (
-        <View style={styles.itemContainer}>
-          <Image source={item.img} style={styles.image} />
-          <Text style={{fontSize: 14, color: 'black', marginTop: 10}}>
-            {item.text}
+    <View
+      style={{
+        flexDirection: 'row',
+        backgroundColor: '#ddd',
+        paddingVertical: 10,
+        justifyContent: 'space-around',
+      }}>
+      {headers.map(header => (
+        <View style={{width: WIDTH / 4, alignItems: 'center'}} key={header.key}>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: 'bold',
+              color: 'black',
+            }}>
+            {header.text}
           </Text>
         </View>
-      )}
-      keyExtractor={(item, index) => index.toString()}
-    />
+      ))}
+    </View>
+  );
+};
+
+const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+const ListView = ({item}) => {
+  console.log('item', item);
+  let color = '';
+  let char = '';
+  if (item.Status == 'ABSENT') {
+    color = RED;
+    char = 'Absent';
+  } else if (item.Status == 'PRESENT') {
+    color = GREEN;
+    char = 'Present';
+  } else if (item.Status == 'WEEKLYOFF') {
+    color = GRAY;
+    char = 'Weekoff';
+  } else if (item.Status == 'LEAVEDAY') {
+    color = ORANGE;
+    char = 'Leave';
+  } else if (item.Status == 'HALFDAY') {
+    color = BLUE;
+    char = 'Half Day';
+  }
+
+  const [day, month, year] = item.Date.split('/');
+  const formattedDate = `${parseInt(day)} ${monthNames[parseInt(month) - 1]}`;
+  return (
+    <View
+      style={{
+        padding: 10,
+        marginVertical: 5,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        elevation: 3,
+        alignSelf: 'center',
+      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+        }}>
+        <View
+          style={{
+            height: HEIGHT * 0.03,
+            // width: WIDTH * 0.05,
+            backgroundColor: color,
+            borderRadius: 2,
+            justifyContent: 'center',
+            alignItems: 'center',
+            elevation: 2,
+          }}>
+          <Text
+            style={{
+              fontSize: 10,
+              fontWeight: 'bold',
+              color: 'white',
+              textAlign: 'center',
+              padding: 5,
+            }}>
+            {char}
+          </Text>
+        </View>
+        <Text
+          style={{
+            width: WIDTH / 4,
+            fontSize: 14,
+            textAlign: 'center',
+            color: 'black',
+          }}>
+          {formattedDate}
+        </Text>
+        <Text
+          style={{
+            width: WIDTH / 4,
+            fontSize: 14,
+            textAlign: 'center',
+            color: 'black',
+          }}>
+          {item.In}
+        </Text>
+        <Text
+          style={{
+            width: WIDTH / 4,
+            fontSize: 14,
+            textAlign: 'center',
+            color: 'black',
+          }}>
+          {item.Out}
+        </Text>
+        <Text
+          style={{
+            width: WIDTH / 4,
+            fontSize: 14,
+            textAlign: 'center',
+            color: 'black',
+          }}>
+          {item.Total}
+        </Text>
+      </View>
+    </View>
   );
 };
 
 const Attendance = () => {
+  const [clientUrl, setClientUrl] = useState('');
+  const [Id, setID] = useState();
+  const [Sl, setSl] = useState();
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const today = new Date();
+    return (today.getMonth() + 1).toString(); // Get current month without leading zeros
+  });
+  const [data, setData] = useState([]);
+
+  const db = SQLitePlugin.openDatabase({
+    name: 'test.db',
+    version: '1.0',
+    description: '',
+    size: 1,
+  });
+
+  const fetchClientUrlFromSQLite = () => {
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          'SELECT client_url FROM ApiResponse ORDER BY id DESC LIMIT 1',
+          [],
+          (_, {rows}) => {
+            const url = rows.item(0)?.client_url || '';
+            resolve(url);
+          },
+          error => {
+            console.error('Error fetching client_url:', error);
+            reject(error);
+          },
+        );
+      });
+    });
+  };
+
+  const RetrieveDetails = async () => {
+    try {
+      const value = await getObjByKey('loginResponse');
+      if (value !== null) {
+        return {
+          Id: value[0]?.loc_cd,
+          Sl: value[0]?.staf_sl,
+        };
+      }
+    } catch (e) {
+      console.error('Error retrieving details:', e);
+    }
+    return {Id: null, Sl: null};
+  };
+
+  const initialize = async () => {
+    try {
+      const [clientUrl, details] = await Promise.all([
+        fetchClientUrlFromSQLite(),
+        RetrieveDetails(),
+      ]);
+
+      setClientUrl(clientUrl);
+      setID(details.Id);
+      setSl(details.Sl);
+
+      if (details.Id && details.Sl && clientUrl) {
+        AttendanceApi(details.Sl, clientUrl);
+      }
+    } catch (error) {
+      console.error('Initialization error:', error);
+    }
+  };
+
+  useEffect(() => {
+    initialize();
+  }, []);
+
+  const AttendanceApi = async (Sl, clientUrl) => {
+    console.log('clientUrl', selectedMonth, Sl);
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+
+      const raw = `{staf_sl: ${Sl} , month: ${selectedMonth}}`;
+      console.log('dsd', raw);
+
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow',
+      };
+
+      await fetch(`${clientUrl}api/mainattnd`, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+          setData(result?.data?.Table1);
+          console.log('check', result);
+        })
+        .catch(error => console.error(error));
+    } catch (error) {
+      console.error('Error fetching ManagerDashBoard:', error);
+    }
+  };
+
   return (
-    <FlatList
-      numColumns={2}
-      data={[
-        {img: LeaveEntry, text: 'Label'},
-        {img: TWO, text: 'Label'},
-        {img: THREE, text: 'Label'},
-        {img: FOUR, text: 'Label'},
-      ]}
-      renderItem={({item}) => (
-        <View style={styles.itemContainer}>
-          <Image source={item.img} style={styles.image} />
-          <Text style={{fontSize: 14, color: 'black', marginTop: 10}}>
-            {item.text}
-          </Text>
-        </View>
-      )}
-      keyExtractor={(item, index) => index.toString()}
-    />
+    <>
+      <TableHeader />
+      <View
+        style={{
+          height: HEIGHT * 0.32,
+        }}>
+        <FlatList
+          data={data}
+          renderItem={({item}) => <ListView item={item} />}
+          keyExtractor={(item, index) => index.toString()}
+          ListFooterComponent={
+            <View
+              style={{
+                height: 50,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}></View>
+          }
+        />
+      </View>
+    </>
   );
 };
 
@@ -178,7 +445,7 @@ const TopTabs = () => {
         tabBarPressColor: 'white',
       }}>
       <Tab.Screen name="Dashboard" component={Dashboard} />
-      <Tab.Screen name="Report" component={Report} />
+      {/* <Tab.Screen name="Report" component={Report} /> */}
       <Tab.Screen name="Attendance" component={Attendance} />
     </Tab.Navigator>
   );
@@ -296,6 +563,45 @@ const Home = () => {
   useEffect(() => {
     get();
   }, []);
+  const get = async () => {
+    try {
+      let tree = await getObjByKey('loginResponse');
+      console.log('fredc', tree);
+
+      if (tree && tree.length > 0) {
+        const profile = tree[0]; // Assuming the profile details are in the first object of the array
+
+        setcode(profile.emp_code);
+        setname(profile.staf_nm);
+        setimage(profile.staf_image);
+        setdept(profile.dept_nm);
+        setdesg(profile.desg_nm);
+        setpresent(profile.PRESENT);
+        setabsent(profile.ABSENT);
+        setleave(profile.LEAVEDAY);
+        sethalf(profile.HALFDAY);
+        setwoff(profile.WOFF);
+
+        // You can now use these variables in your component or logic
+        // For example, you could set them in the state if using a class component or useState if using a functional component
+      } else {
+        console.log('No profile data found');
+      }
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+    }
+  };
+
+  const [name, setname] = useState();
+  const [code, setcode] = useState();
+  const [image, setimage] = useState();
+  const [dept, setdept] = useState();
+  const [desg, setdesg] = useState();
+  const [present, setpresent] = useState();
+  const [absent, setabsent] = useState();
+  const [leave, setleave] = useState();
+  const [half, sethalf] = useState();
+  const [woff, setwoff] = useState();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -337,13 +643,13 @@ const Home = () => {
                     justifyContent: 'center',
                     alignSelf: 'center',
                   }}>
-                  <Text style={styles.headerText}>Saswat</Text>
+                  <Text style={styles.headerText}>{name}</Text>
                   <Text
                     style={{
                       ...styles.headerText,
                       fontSize: 14,
                     }}>
-                    ID: 001 | Admin
+                    ID: {code} | {dept}
                   </Text>
                 </View>
                 <View
@@ -488,7 +794,7 @@ const Home = () => {
               <View
                 style={{
                   width: '100%',
-                  height: '30%',
+                  height: '25%',
                   alignSelf: 'center',
                   marginLeft: 7,
                   justifyContent: 'space-evenly',
@@ -514,7 +820,7 @@ const Home = () => {
               </View>
               <View
                 style={{
-                  width: '110%',
+                  width: '100%',
                   height: '70%',
                   alignSelf: 'center',
                   justifyContent: 'space-evenly',
@@ -546,14 +852,14 @@ const Home = () => {
                       fontSize: 35,
                       fontFamily: 'Poppins-Bold',
                     }}>
-                    20
+                    {present}
                   </Text>
                 </View>
                 <View
                   style={{
                     marginTop: '6%',
                     height: '50%',
-                    width: '0.1%',
+                    width: '0.12%',
                     backgroundColor: GRAY,
                   }}
                 />
@@ -580,7 +886,7 @@ const Home = () => {
                       fontSize: 35,
                       fontFamily: 'Poppins-Bold',
                     }}>
-                    10
+                    {absent}
                   </Text>
                 </View>
                 <View
@@ -614,7 +920,7 @@ const Home = () => {
                       fontSize: 35,
                       fontFamily: 'Poppins-Bold',
                     }}>
-                    10
+                    {leave}
                   </Text>
                 </View>
                 <View
@@ -648,7 +954,7 @@ const Home = () => {
                       fontSize: 35,
                       fontFamily: 'Poppins-Bold',
                     }}>
-                    10
+                    {half}
                   </Text>
                 </View>
               </View>
@@ -724,7 +1030,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     width: WIDTH * 0.85,
-    height: HEIGHT * 0.2,
+    height: HEIGHT * 0.22,
     bottom: HEIGHT * 0.15,
     elevation: HEIGHT * 0.01,
     paddingTop: 5,
@@ -736,6 +1042,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'white',
     zIndex: 999,
+    marginTop: 4,
   },
   tabContainer: {
     flex: 1,

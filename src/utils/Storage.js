@@ -9,6 +9,7 @@ export const storeStringByKey = async (key, value) => {
 export const storeObjByKey = async (key, value) => {
   try {
     await AsyncStorage.setItem(key, JSON.stringify(value));
+    console.log('success', key);
   } catch (e) {}
 };
 

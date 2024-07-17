@@ -13,6 +13,7 @@ import {
   Image,
   BackHandler,
   ToastAndroid,
+  Alert,
 } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -164,6 +165,12 @@ const Check = ({navigation}) => {
             );
           });
         } else {
+          Alert.alert(
+            'Invalid Code',
+            result.msg,
+            [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+            {cancelable: false},
+          );
           console.error('Invalid response from API:', result);
         }
       })

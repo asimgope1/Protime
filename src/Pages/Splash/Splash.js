@@ -1,5 +1,11 @@
 import React, {Fragment, useEffect} from 'react';
-import {View, Image, SafeAreaView, ImageBackground} from 'react-native';
+import {
+  View,
+  Image,
+  SafeAreaView,
+  ImageBackground,
+  PermissionsAndroid,
+} from 'react-native';
 import {BRAND} from '../../constants/color';
 import LinearGradient from 'react-native-linear-gradient';
 import {BASE, LOGO, LOGO2} from '../../constants/imagepath';
@@ -11,8 +17,78 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import WritingAnimation from '../../components/WritingAnimation';
+import Geolocation from '@react-native-community/geolocation';
+import {storeObjByKey} from '../../utils/Storage';
 
 const Splash = ({navigation}) => {
+  const requestLocationPermission = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        const locationGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'ProTime Location Permission',
+            message:
+              'ProTime needs access to your location to provide attendance tracking. Your location data will only be used for this purpose and will not be shared with third parties. Tap "Allow" to grant permission or "Deny" to decline.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (locationGranted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Location permission granted');
+          getCurrentLocation();
+        } else {
+          console.log('Location permission denied');
+        }
+      } else {
+        // For iOS, no need to request permissions manually, it's done automatically
+        getCurrentLocation();
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        console.log('Latitude:', latitude);
+        console.log('Longitude:', longitude);
+
+        // Call the reverse geocode API
+        reverseGeocode(latitude, longitude);
+      },
+      error => {
+        console.error('Error getting location:', error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 10000,
+      },
+    );
+  };
+
+  const reverseGeocode = async (latitude, longitude) => {
+    console.log('hiii');
+    try {
+      const response = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
+      );
+      const result = await response.json();
+      console.log('Reverse geocode result:', result);
+      storeObjByKey('location', result);
+    } catch (error) {
+      console.error('Error fetching reverse geocode:', error);
+    }
+  };
+
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
+
   const logoTranslateY = useSharedValue(HEIGHT);
   const logo2TranslateY = useSharedValue(-HEIGHT);
 

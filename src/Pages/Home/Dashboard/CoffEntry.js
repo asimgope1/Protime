@@ -1,33 +1,27 @@
-import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
-  StatusBar,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
   TouchableOpacity,
   TextInput,
-  FlatList,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  Platform,
 } from 'react-native';
-import {HEIGHT, MyStatusBar, WIDTH} from '../../../constants/config';
+import React, {useEffect, useState} from 'react';
+import {HEIGHT, WIDTH} from '../../Login/Login';
 import {BLACK, GRAY, ORANGE, RED, WHITE} from '../../../constants/color';
 import Header from '../../../components/Header';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {CheckBox, Icon} from '@rneui/themed';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
 import moment from 'moment';
 import SQLitePlugin from 'react-native-sqlite-2';
 import {getObjByKey} from '../../../utils/Storage';
 import LinearGradient from 'react-native-linear-gradient';
+import {CheckBox, Icon} from '@rneui/themed';
 
-const Tab = createMaterialTopTabNavigator();
-
-const Leave = () => {
+const CoffEntry = ({navigation}) => {
   const [fullDay, setFullDay] = useState(true);
   const [halfDay, setHalfDay] = useState(false);
   const [fromDate, setFromDate] = useState(new Date());
@@ -136,7 +130,7 @@ const Leave = () => {
       redirect: 'follow',
     };
 
-    fetch(`${clientUrl}api/leaveapply`, requestOptions)
+    fetch(`${clientUrl}api/coffapply`, requestOptions)
       .then(response => response.json())
       .then(result => {
         if (result.Code === '200') {
@@ -165,7 +159,7 @@ const Leave = () => {
 
     try {
       const response = await fetch(
-        `${clientUrl}/api/leavedisplay`,
+        `${clientUrl}/api/coffdisplay`,
         requestOptions,
       );
       const result = await response.json();
@@ -223,6 +217,7 @@ const Leave = () => {
     <KeyboardAvoidingView
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <Header title="Coff Entry" onBackPress={() => navigation.goBack()} />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -541,75 +536,7 @@ const Leave = () => {
   );
 };
 
-const Report = () => {
-  return (
-    <View
-      style={{
-        flex: 1,
-        width: '100%',
-        backgroundColor: 'red',
-        alignSelf: 'center',
-        alignItems: 'center',
-      }}>
-      <Text>Report</Text>
-    </View>
-  );
-};
-
-const TopTabs = () => {
-  return (
-    <Tab.Navigator
-      initialRouteName="Apply Leave"
-      screenOptions={{
-        tabBarActiveTintColor: 'black',
-        tabBarInactiveTintColor: 'gray',
-        tabBarIndicatorStyle: {
-          backgroundColor: RED,
-        },
-        tabBarPressOpacity: 0.1,
-        tabBarPressColor: 'white',
-
-        tabBarStyle: {
-          height: HEIGHT * 0.06,
-          width: WIDTH * 0.95,
-          alignSelf: 'center',
-          marginTop: 10,
-          borderWidth: 0.2,
-          borderColor: 'gray',
-
-          // backgroundColor: 'white',
-        },
-      }}>
-      <Tab.Screen name="Apply Leave" component={Leave} />
-      <Tab.Screen name="View Report" component={Report} />
-    </Tab.Navigator>
-  );
-};
-
-const LeaveEntry = ({navigation}) => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor={'transparent'}
-        translucent={true}
-        animated={true}
-      />
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <Header title="Leave Entry" onBackPress={() => navigation.goBack()} />
-        <ScrollView
-          contentContainerStyle={styles.scrollViewContent}
-          scrollEnabled={false}>
-          <TopTabs />
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
-};
-
-export default LeaveEntry;
+export default CoffEntry;
 
 const styles = StyleSheet.create({
   container: {

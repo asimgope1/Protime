@@ -7,12 +7,22 @@ import {Icon} from '@rneui/themed';
 import {HEIGHT, WIDTH} from '../constants/config';
 import {BLACK, GRAY, RED, WHITE} from '../constants/color';
 import Manager from '../Pages/Home/Manager/Manager';
-import Notification from '../Pages/Home/Notification/Notification';
+import Notification from '../Pages/Home/Reports/Reports';
 import Profile from '../Pages/Home/Profile/Profile';
 import LeaveEntry from '../Pages/Home/Dashboard/LeaveEntry';
 import OutDoor from '../Pages/Home/Dashboard/OutDoor';
 import LeaveBalance from '../Pages/Home/Dashboard/LeaveBalance';
 import LeaveStatus from '../Pages/Home/Dashboard/LeaveStatus';
+import LeaveApproval from '../Pages/Home/Approval/LeaveApproval';
+import OutdoorApproval from '../Pages/Home/Approval/OutdoorApproval';
+import MannualApproval from '../Pages/Home/Approval/MannualApproval';
+import CoffApproval from '../Pages/Home/Approval/CoffApproval';
+import CoffEntry from '../Pages/Home/Dashboard/CoffEntry';
+import Reports from '../Pages/Home/Reports/Reports';
+import InOut from '../Pages/Home/Dashboard/InOut';
+import getreports from '../Pages/Home/Reports/Getreports';
+import Getreports from '../Pages/Home/Reports/Getreports';
+import ClientVisit from '../Pages/Home/Dashboard/ClientVisit';
 
 // Define the HomeStack
 const HomeStackNavigator = createNativeStackNavigator();
@@ -60,8 +70,8 @@ const TabStack = () => {
             iconName = 'home';
           } else if (route.name === 'Manager') {
             iconName = 'manage-accounts';
-          } else if (route.name === 'Notification') {
-            iconName = 'bell';
+          } else if (route.name === 'Reports') {
+            iconName = 'face-man-profile';
             type = 'material-community';
           } else if (route.name === 'Profile') {
             iconName = 'account';
@@ -95,12 +105,18 @@ const TabStack = () => {
       <Tab.Screen
         name="Manager"
         component={Manager}
-        options={{headerShown: false, title: 'Manager'}}
+        options={{
+          headerShown: false,
+          title: 'Manager',
+          tabBarStyle: {
+            display: 'none',
+          },
+        }}
       />
       <Tab.Screen
-        name="Notification"
-        component={Notification}
-        options={{headerShown: false, title: 'Notification'}}
+        name="Reports"
+        component={Reports}
+        options={{headerShown: false, title: 'Reports'}}
       />
       <Tab.Screen
         name="Profile"
@@ -140,6 +156,46 @@ const MainStack = () => {
       <MainStackNavigator.Screen
         name="LeaveStatus"
         component={LeaveStatus}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="LeaveApproval"
+        component={LeaveApproval}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="OutdoorApproval"
+        component={OutdoorApproval}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="MannualApproval"
+        component={MannualApproval}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="CoffApproval"
+        component={CoffApproval}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="CoffEntry"
+        component={CoffEntry}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="InOut"
+        component={InOut}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="getreports"
+        component={Getreports}
+        options={{headerShown: false, animation: 'slide_from_right'}}
+      />
+      <MainStackNavigator.Screen
+        name="ClientVisit"
+        component={ClientVisit}
         options={{headerShown: false, animation: 'slide_from_right'}}
       />
     </MainStackNavigator.Navigator>

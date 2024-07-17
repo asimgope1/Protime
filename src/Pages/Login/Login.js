@@ -12,6 +12,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -94,10 +95,13 @@ const Login = ({navigation}) => {
 
     try {
       const res = await POSTNETWORK(url, data);
+      console.log('reddd', res);
 
-      if (res.Code === '200') {
+      if (res.Code === '200' && res.msg !== 'Invalid Username or Password.') {
         // Store login response (if needed)
         storeObjByKey('loginResponse', res.data);
+        storeObjByKey('userid', username);
+        storeObjByKey('password', password);
 
         // Store username and password securely in SQLite
         const db = SQLitePlugin.openDatabase({
@@ -133,6 +137,9 @@ const Login = ({navigation}) => {
         // Dispatch action to update user token or navigate to Home
         dispatch(checkuserToken(true));
       } else {
+        Alert.alert('Login failed', res.msg, [
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ]);
         console.error('Login failed:', res.Message); // Handle login failure
       }
     } catch (error) {

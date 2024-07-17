@@ -9,14 +9,18 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   FlatList,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
 import {getObjByKey} from '../../../utils/Storage';
 import SQLitePlugin from 'react-native-sqlite-2';
-import {WIDTH} from '../../../constants/config';
+import {HEIGHT, WIDTH} from '../../../constants/config';
 import {RED, WHITE} from '../../../constants/color';
 import Header from '../../../components/Header';
+import {REPORTS} from '../../../constants/imagepath';
+import {Icon} from '@rneui/themed';
 
-const LeaveBalance = ({navigation}) => {
+const Reports = ({navigation}) => {
   const [clientUrl, setClientUrl] = useState('');
   const [Id, setID] = useState();
   const [Sl, setSl] = useState();
@@ -130,36 +134,91 @@ const LeaveBalance = ({navigation}) => {
     }
   };
 
+  const data = [
+    {
+      Name: 'Daily Attendance Register',
+      endpoint: 'api/DailyAttendanceRegister',
+    },
+    {
+      Name: 'Presentee Register',
+      endpoint: 'api/PresenteeRegister',
+    },
+    {
+      Name: 'Absentee Register',
+      endpoint: 'api/AbsenteeRegister',
+    },
+    {
+      Name: 'Holiday Register',
+      endpoint: 'api/AbsenteeRegister',
+    },
+    {
+      Name: 'Multi Punch Register',
+      endpoint: 'api/AbsenteeRegister',
+    },
+    {
+      Name: 'Late Commer Register',
+      endpoint: 'api/AbsenteeRegister',
+    },
+    {
+      Name: 'Outdoor Register',
+      endpoint: 'api/AbsenteeRegister',
+    },
+    {
+      Name: 'Manual Register',
+      endpoint: 'api/AbsenteeRegister',
+    },
+    {
+      Name: 'Leave Register',
+      endpoint: 'api/AbsenteeRegister',
+    },
+    {
+      Name: 'Monthly Attendance Register',
+      endpoint: 'api/AbsenteeRegister',
+    },
+  ];
+
   const renderItem = ({item}) => {
     console.log('item', item);
     let color = '';
-    if (item.Name === 'Paid Leave') {
+    if (item.Name === 'Daily Attendance Register') {
       color = 'green';
-    } else if (item.Name === 'Casual Leave') {
+    } else if (item.Name === 'Presentee Register') {
       color = 'orange';
-    } else if (item.Name === 'Sick Leave') {
+    } else if (item.Name === 'Absentee Register') {
       color = 'red';
     } else {
       color = 'black';
     }
 
     return (
-      <View
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('getreports', {item: item});
+        }}
         style={{
           ...styles.card,
           borderColor: color,
         }}>
+        <Image
+          source={REPORTS}
+          style={{
+            height: HEIGHT * 0.035,
+            width: WIDTH * 0.1,
+            resizeMode: 'contain',
+            marginLeft: 10,
+            marginTop: 10,
+          }}
+        />
         <View style={styles.rightContainer}>
           <Text style={[styles.nameText, getColorByName(item.Name)]}>
             {item.Name}
           </Text>
         </View>
-        <View style={styles.separator}></View>
 
         <View style={styles.leftContainer}>
-          <Text style={styles.balanceText}>{item.Balance}</Text>
+          <Icon name="arrowright" type="antdesign" />
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -182,15 +241,16 @@ const LeaveBalance = ({navigation}) => {
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <Header title="Leave Balance" onBackPress={() => navigation.goBack()} />
+        <Header title="Reports" onBackPress={() => navigation.goBack()} />
         <ScrollView
           contentContainerStyle={styles.scrollViewContent}
           scrollEnabled={false}>
           <View style={styles.loginContainer}>
             <FlatList
-              data={Balance}
+              data={data}
               renderItem={renderItem}
               keyExtractor={(item, index) => index.toString()}
+              ListFooterComponent={<View style={{height: 60}} />}
             />
           </View>
         </ScrollView>
@@ -199,7 +259,7 @@ const LeaveBalance = ({navigation}) => {
   );
 };
 
-export default LeaveBalance;
+export default Reports;
 
 const styles = StyleSheet.create({
   loadingContainer: {
@@ -218,7 +278,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   loginContainer: {
-    flex: 1,
+    height: HEIGHT * 0.9,
     width: WIDTH * 0.95,
     alignSelf: 'center',
     alignItems: 'center',
@@ -242,7 +302,7 @@ const styles = StyleSheet.create({
   },
   leftContainer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   balanceText: {
     fontFamily: 'Poppins-Medium',
@@ -256,12 +316,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   rightContainer: {
-    flex: 1,
-    alignItems: 'flex-start', // Align items to the left
+    height: '100%',
+    width: '60%',
+    marginLeft: 20,
+    // justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center', // Align items to the left
   },
   nameText: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 15,
+    fontSize: 14.5,
     color: 'black',
   },
   paidLeave: {

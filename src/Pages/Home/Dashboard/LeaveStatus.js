@@ -130,56 +130,94 @@ const LeaveStatus = ({navigation}) => {
     }
   };
 
-  const handleDelete = id => {
+  const handleDelete = async id => {
     // Handle delete action
+
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+
+      const raw = JSON.stringify({id: id});
+
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow',
+      };
+
+      const response = await fetch(
+        `${clientUrl}api/LeaveCancel`,
+        requestOptions,
+      );
+      const result = await response.json();
+      console.log('status', result);
+      if (result.Code === '200') {
+        alert(result.msg);
+        fetchLeaveStatus(Id, Sl);
+      }
+    } catch (error) {
+      console.error('Error fetching leave status:', error);
+    }
     console.log('Delete item with id:', id);
   };
 
-  const renderItem = ({item}) => (
-    <View
-      style={[
-        styles.card,
-        {borderLeftColor: getBorderColor(item.leave_status)},
-      ]}>
-      <View style={styles.row}>
-        <View style={styles.dateContainer}>
-          <Text style={styles.dateText}>{item.apply_dt}</Text>
+  const renderItem = ({item}) => {
+    let status = '';
+    if (item.leave_status === 'PENDING') {
+      status = 'orange';
+    } else if (item.leave_status === 'CANCELLED') {
+      status = 'red';
+    }
+
+    return (
+      <View
+        style={[
+          styles.card,
+          {borderLeftColor: getBorderColor(item.leave_status)},
+        ]}>
+        <View style={styles.row}>
+          <View style={styles.dateContainer}>
+            <Text style={styles.dateText}>{item.apply_dt}</Text>
+          </View>
+          <View style={styles.separator}></View>
+          <View style={styles.detailsContainer}>
+            <Text style={styles.text}>
+              <Text style={styles.text1}>Leave Name:</Text> {item.leave_nm}
+            </Text>
+            <Text style={styles.text}>
+              <Text style={styles.text1}>Reason:</Text> {item.reason}
+            </Text>
+          </View>
+          {status === 'orange' && (
+            <TouchableOpacity
+              style={styles.deleteIcon}
+              onPress={() => handleDelete(item.v_no)}>
+              <Icon name="delete" size={24} color="red" />
+            </TouchableOpacity>
+          )}
         </View>
-        <View style={styles.separator}></View>
-        <View style={styles.detailsContainer}>
+        <View style={styles.additionalInfo}>
           <Text style={styles.text}>
-            <Text style={styles.text1}>Leave Name:</Text> {item.leave_nm}
+            <Text style={styles.text1}>From Date: </Text>
+            {item.from_date}
           </Text>
           <Text style={styles.text}>
-            <Text style={styles.text1}>Reason:</Text> {item.reason}
+            <Text style={styles.text1}>To Date: </Text>
+            {item.to_date}
+          </Text>
+          <Text style={styles.text}>
+            {' '}
+            <Text style={styles.text1}>Leave Status:</Text> {item.leave_status}
+          </Text>
+          <Text style={styles.text}>
+            {' '}
+            <Text style={styles.text1}>Leave Type:</Text> {item.leave_type}
           </Text>
         </View>
-        <TouchableOpacity
-          style={styles.deleteIcon}
-          onPress={() => handleDelete(item.v_no)}>
-          <Icon name="delete" size={24} color="red" />
-        </TouchableOpacity>
       </View>
-      <View style={styles.additionalInfo}>
-        <Text style={styles.text}>
-          <Text style={styles.text1}>From Date: </Text>
-          {item.from_date}
-        </Text>
-        <Text style={styles.text}>
-          <Text style={styles.text1}>To Date: </Text>
-          {item.to_date}
-        </Text>
-        <Text style={styles.text}>
-          {' '}
-          <Text style={styles.text1}>Leave Status:</Text> {item.leave_status}
-        </Text>
-        <Text style={styles.text}>
-          {' '}
-          <Text style={styles.text1}>Leave Type:</Text> {item.leave_type}
-        </Text>
-      </View>
-    </View>
-  );
+    );
+  };
 
   if (loading) {
     return (
